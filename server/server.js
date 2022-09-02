@@ -1,7 +1,14 @@
+let calculationsArray = [];
+
+// calculationObjInArray = {
+//  calc: '1+1',
+//  answer: 2
+// }
+
 const express = require('express');
 
 const app = express();
-const bodyParser = require(‘body-parser’);
+const bodyParser = require('body-parser');
 const PORT = 5000;
 
 app.use(express.static('server/public'));
