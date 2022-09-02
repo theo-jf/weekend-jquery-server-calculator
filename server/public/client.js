@@ -1,12 +1,14 @@
+let doubleOperator = false;
+
 $(readyNow);
 
 function readyNow() {
     // TODO:
 
-    // Listener for #equals --> post request to server
+    // Listener for #equals --> post request to server DONE
     $('#equals').on('click', '#display', submitEquation);
 
-    // After (.then) post request, get request function to retrieve result
+    // After (.then) post request, get request function to retrieve result 
     // Put result back into input like a real calculator
     // Calculation gets appended on server side to array which is loop displayed in history table
 
@@ -40,7 +42,15 @@ function submitEquation() {
 
 function appendDisplay() {
     let symbol = $(this).text();
-    $('#display').append(`${symbol}`);
+    let buttonType = $(this).attr('class').split(' ')[1];
+    console.log(buttonType);
+    if (buttonType === 'operator' && doubleOperator === false) {
+        doubleOperator = true;
+        $('#display').append(`${symbol}`);
+    } if (buttonType === 'number') {
+        doubleOperator = false;
+        $('#display').append(`${symbol}`);
+    }
 }
 
 function getAnswer() {
@@ -49,6 +59,7 @@ function getAnswer() {
         url: '/function'
     }).then(function(response) {
         $('#display').append(response);
+        doubleOperator = false;
         displayHistory();
     })
 }
@@ -68,3 +79,4 @@ function displayHistory() {
         }
     });
 }
+
