@@ -6,7 +6,7 @@ function readyNow() {
     // TODO:
 
     // Listener for #equals --> post request to server DONE
-    $('#equals').on('click', '#display', submitEquation);
+    $('#equals').on('click', {target: '#display'}, submitEquation);
 
     // After (.then) post request, get request function to retrieve result 
     // Put result back into input like a real calculator
@@ -23,17 +23,19 @@ function readyNow() {
     // listener on entire table for click on history to re-run calculation (this)
     // Just re-push old calculation and do original post request again
     // Put answer in input, calculation at the top of history
-    $('#historyTable').on('click', '.history', submitEquation);
+    $('#historyTable').on('click', '.history', {target: this}, submitEquation);
 
     // Don't forget .toFixed(#)! Look up how many digits a normal calculator goes until
 }
 
-function submitEquation() {
-    let calculation = $(this).text();
+function submitEquation(target) {
+    let selector = target.data.target;
+    let equation = $(selector).text();
+    console.log(equation);
     $.ajax({
         type: 'POST',
         url: '/function',
-        data: {calculation}
+        data: {equation}
     }).then(function(response) {
         console.log(response);
         getAnswer();

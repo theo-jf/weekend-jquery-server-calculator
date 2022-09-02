@@ -1,7 +1,6 @@
 let calculationHistory =  {
     calculations: [],
     answers: []
-
 };
 
 const express = require('express');
@@ -14,9 +13,11 @@ app.use(express.static('server/public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/function', (req, res) => {
-    calculationHistory.calculations.push(req.body);
-    let math = req.body.split('+'|'-'|'x'|'÷');
+    calculationHistory.calculations.push(req.body.equation);
+    console.log(calculationHistory.calculations[calculationHistory.calculations.length - 1]);
+    let math = calculationHistory.calculations[calculationHistory.calculations.length - 1].split(/['+''-''x''÷']+/);
     console.log(math);
+    // res.sendStatus();
 })
 
 
