@@ -13,11 +13,11 @@ app.use(express.static('server/public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/function', (req, res) => {
-    calculationHistory.calculations.push(req.body.equation);
+    calculationHistory.calculations.push(req.body.equationString);
     console.log(calculationHistory.calculations[calculationHistory.calculations.length - 1]);
-    let math = calculationHistory.calculations[calculationHistory.calculations.length - 1].split(/['+''-''x''÷']+/);
+    let math = calculationHistory.calculations[calculationHistory.calculations.length - 1].split(/['+''sub''x''÷']+/);
     console.log(math);
-    // res.sendStatus();
+    res.sendStatus(202);
 })
 
 

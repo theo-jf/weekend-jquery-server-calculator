@@ -1,4 +1,5 @@
 let doubleOperator = false;
+let equationString = '';
 
 $(readyNow);
 
@@ -6,7 +7,7 @@ function readyNow() {
     // TODO:
 
     // Listener for #equals --> post request to server DONE
-    $('#equals').on('click', {target: '#display'}, submitEquation);
+    $('#equals').on('click', submitEquation);
 
     // After (.then) post request, get request function to retrieve result 
     // Put result back into input like a real calculator
@@ -28,30 +29,55 @@ function readyNow() {
     // Don't forget .toFixed(#)! Look up how many digits a normal calculator goes until
 }
 
-function submitEquation(target) {
-    let selector = target.data.target;
-    let equation = $(selector).text();
-    console.log(equation);
+function submitEquation() {
+    equationString += $('#display').text();
+    console.log(equationString);
     $.ajax({
         type: 'POST',
         url: '/function',
-        data: {equation}
+        data: {equationString}
     }).then(function(response) {
         console.log(response);
+        equationString = '';
         getAnswer();
     });
 }
 
 function appendDisplay() {
-    let symbol = $(this).text();
+    let symbol = String($(this).text());
     let buttonType = $(this).attr('class').split(' ')[1];
-    console.log(buttonType);
-    if (buttonType === 'operator' && doubleOperator === false) {
-        doubleOperator = true;
+    if (buttonType === 'number' && doubleOperator === false) {
         $('#display').append(`${symbol}`);
-    } if (buttonType === 'number') {
+    } if (buttonType === 'operator') {
+        if (doubleOperator === false) {
+            equationString += $('#display').text();
+            doubleOperator = true;
+        } else if (doubleOperator === true) {
+            equationString = equationString.slice(0, -1);
+        }
+        if ($(this).attr('id') === 'subtract') {
+            equationString += 'sub';
+        } else {
+            equationString += symbol;
+        } 
+    } if (buttonType === 'number' && doubleOperator === true) {
+        // clear the display
+        $('#display').text('');
+        $('#display').append(`${symbol}`);
         doubleOperator = false;
-        $('#display').append(`${symbol}`);
+    } if (buttonType === 'posNeg') {
+        if (doubleOperator === true) {
+            $('#display').text('');
+            doubleOperator = false;
+        }
+        if (Array.from($('#display').text())[0] === '-') {
+            let numberString = $('#display').text();
+            numberString = numberString.slice(1);
+            $('#display').text('');
+            $('#display').append(numberString);
+        } else {
+            $('#display').prepend(`${'-'}`);
+        }
     }
 }
 
