@@ -1,10 +1,15 @@
 let doubleOperator = false;
 let equationString = '';
+let answerOnDisplay = false;
+let doubleDecimal = false;
 
 $(readyNow);
 
 function readyNow() {
     // TODO:
+
+    // Delete server-stored history on page load
+    // clearHistory();
 
     // Listener for #equals --> post request to server DONE
     $('#equals').on('click', submitEquation);
@@ -24,7 +29,7 @@ function readyNow() {
     // listener on entire table for click on history to re-run calculation (this)
     // Just re-push old calculation and do original post request again
     // Put answer in input, calculation at the top of history
-    $('#historyTable').on('click', '.history', {target: this}, submitEquation);
+    $('#historyTable').on('click', '.history', redoCalculation);
 
     // Don't forget .toFixed(#)! Look up how many digits a normal calculator goes until
 }
@@ -47,8 +52,22 @@ function appendDisplay() {
     let symbol = String($(this).text());
     let buttonType = $(this).attr('class').split(' ')[1];
     if (buttonType === 'number' && doubleOperator === false) {
+        if (answerOnDisplay === true) {
+            $('#display').text('');
+            answerOnDisplay = false;
+        }
         $('#display').append(`${symbol}`);
+    } if (buttonType === 'decimal') {
+        if (answerOnDisplay === true) {
+            $('#display').text('');
+            answerOnDisplay = false;
+        }
+        if (doubleDecimal === false) {
+            $('#display').append(`${symbol}`);
+            doubleDecimal = true;
+        }
     } if (buttonType === 'operator') {
+        doubleDecimal = false;
         if (doubleOperator === false) {
             equationString += $('#display').text();
             doubleOperator = true;
@@ -86,8 +105,11 @@ function getAnswer() {
         type: 'GET',
         url: '/function'
     }).then(function(response) {
+        $('#display').text('');
         $('#display').append(response);
         doubleOperator = false;
+        doubleDecimal = false;
+        answerOnDisplay = true;
         displayHistory();
     })
 }
@@ -98,13 +120,23 @@ function displayHistory() {
         url: '/history'
     }).then(function(response) {
         $('#historyTableBody').empty();
-        for (let calculation of response) {
-            $('#historyTableBody').append(`
+        for (let i = 0; i < response.calculations.length; i++) {
+            let equation = response.calculations[i].replace(/sub/g, '-');
+            $('#historyTableBody').prepend(`
                 <tr>
-                    <td class="history">${calculation}</td>
+                    <td class="history">${equation}</td>
                 </tr>
             `);
         }
     });
+}
+
+function redoCalculation() {
+    equationString = '';
+    $('#display').text('');
+    // equationString = $(this).text().replace(/-[\d]/g, 'sub-');
+    equationString = $(this).text().replace(/(?<=\d)-/g, 'sub');
+    console.log(equationString);
+    submitEquation();
 }
 
