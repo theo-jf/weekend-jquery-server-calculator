@@ -13,15 +13,31 @@ app.use(express.static('server/public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/function', (req, res) => {
-    calculationHistory.calculations.push(req.body.equationString);
-    console.log(calculationHistory.calculations[calculationHistory.calculations.length - 1]);
-    let numbers = calculationHistory.calculations[calculationHistory.calculations.length - 1].split(/['+''sub''x''÷']+/);
-    let operators = calculationHistory.calculations[calculationHistory.calculations.length - 1].split(/[-\d]+/);
+    let numbers = req.body.equationString.split(/['+''sub''x''÷']+/);
+    let operators = req.body.equationString.split(/[-\d]+/);
+    // Remove hanging dots and fill calculationHistory
     operators = operators.filter(element => {
         return (element === '' || element === '.') ? false : true;
     });
-    console.log(numbers);
-    console.log(operators);
+    let refinedCalculation = [];
+    let j = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        if (numbers[i].charAt(numbers[i].length - 1) === '.') {
+            numbers[i] = numbers[i].slice(0, -1);
+            refinedCalculation.push(numbers[i]);
+        } else {
+            refinedCalculation.push(numbers[i]);
+        }
+        while (j < operators.length) {
+            operators[j] = operators[j].replace(/['.']/g, '');
+            refinedCalculation.push(operators[j]);
+            j++;
+            break;
+        }
+    }
+    refinedCalculation = refinedCalculation.join('');
+    console.log(refinedCalculation);
+    calculationHistory.calculations.push(refinedCalculation);
     let answer = 0;
     let i = 0;
     for (let number of numbers) {

@@ -1,7 +1,10 @@
 let doubleOperator = false;
-let equationString = '';
-let answerOnDisplay = false;
+let operatorCount = 0;
 let doubleDecimal = false;
+let doubleNumber = false;
+let answerOnDisplay = true;
+let equationString = '';
+let operatorCarryOver = [];
 
 $(readyNow);
 
@@ -35,8 +38,25 @@ function readyNow() {
 }
 
 function submitEquation() {
-    equationString += $('#display').text();
-    console.log(equationString);
+    if (!isNaN(equationString.charAt(equationString.length - 1))) {
+        equationString += $('#display').text();
+        console.log("1")
+    } else {
+        if (doubleNumber === true) {
+            equationString += $('#display').text();
+            console.log("2")
+        } else {
+            console.log('To remove:', equationString.charAt(equationString.length - 1));
+            if (equationString.charAt(equationString.length - 1) === 'b') {
+                equationString = equationString.slice(0, -3);
+                console.log('sus');
+            } else {
+                equationString = equationString.slice(0, -1);
+            }
+            console.log(equationString);
+        }
+    }
+    console.log('equation string:', equationString);
     $.ajax({
         type: 'POST',
         url: '/function',
@@ -51,43 +71,66 @@ function submitEquation() {
 function appendDisplay() {
     let symbol = String($(this).text());
     let buttonType = $(this).attr('class').split(' ')[1];
-    if (buttonType === 'number' && doubleOperator === false) {
-        if (answerOnDisplay === true) {
+    if (buttonType === 'number') {
+        if (answerOnDisplay === true || doubleOperator === true) {
             $('#display').text('');
             answerOnDisplay = false;
         }
         $('#display').append(`${symbol}`);
-    } if (buttonType === 'decimal') {
-        if (answerOnDisplay === true) {
+        doubleNumber = true;
+        doubleOperator = false;
+    } else if (buttonType === 'decimal') {
+        if (answerOnDisplay === true || doubleOperator === true) {
             $('#display').text('');
+            $('#display').text('0');
             answerOnDisplay = false;
+            doubleOperator = false;
         }
         if (doubleDecimal === false) {
             $('#display').append(`${symbol}`);
             doubleDecimal = true;
         }
-    } if (buttonType === 'operator') {
+    } else if (buttonType === 'operator') {
+        operatorCount++;
         doubleDecimal = false;
         if (doubleOperator === false) {
-            equationString += $('#display').text();
+            if (answerOnDisplay === true || doubleNumber === true && operatorCount <= 2) {
+                // If operation on answer from equation history
+                equationString += $('#display').text();
+                doubleOperator = true;
+                doubleNumber = false;
+            } else if (answerOnDisplay === false && doubleNumber === true && operatorCount > 2) {  
+                if ($(this).attr('id') === 'subtract') {
+                    operatorCarryOver.push('sub');
+                    submitEquation();
+                } else {
+                    operatorCarryOver.push(symbol);
+                    submitEquation();
+                }
+            }
+        } else if (doubleOperator === true){
+            if (equationString.charAt(equationString.length - 1) === 'b') {
+                equationString = equationString.slice(0, -3);
+                console.log('sus');
+            } else {
+                equationString = equationString.slice(0, -1);
+            }
+            operatorCount--;
             doubleOperator = true;
-        } else if (doubleOperator === true) {
-            equationString = equationString.slice(0, -1);
-        }
+        } 
         if ($(this).attr('id') === 'subtract') {
             equationString += 'sub';
         } else {
             equationString += symbol;
         } 
-    } if (buttonType === 'number' && doubleOperator === true) {
+        doubleOperator = true;
+    } else if (buttonType === 'number' && doubleOperator === true) {
         // clear the display
         $('#display').text('');
         $('#display').append(`${symbol}`);
-        doubleOperator = false;
-    } if (buttonType === 'posNeg') {
+    } else if (buttonType === 'posNeg') {
         if (doubleOperator === true) {
             $('#display').text('');
-            doubleOperator = false;
         }
         if (Array.from($('#display').text())[0] === '-') {
             let numberString = $('#display').text();
@@ -107,9 +150,19 @@ function getAnswer() {
     }).then(function(response) {
         $('#display').text('');
         $('#display').append(response);
+        console.log('response', response);
         doubleOperator = false;
         doubleDecimal = false;
+        doubleNumber = false;
         answerOnDisplay = true;
+        operatorCount = 0;
+        if (operatorCarryOver.length > 0) {
+            equationString += response + operatorCarryOver[0];
+            operatorCarryOver.splice(0, 1);
+            console.log(equationString);
+            console.log(operatorCarryOver);
+            doubleOperator = true;
+        }
         displayHistory();
     })
 }
@@ -132,10 +185,14 @@ function displayHistory() {
 }
 
 function redoCalculation() {
-    equationString = '';
-    $('#display').text('');
-    // equationString = $(this).text().replace(/-[\d]/g, 'sub-');
-    equationString = $(this).text().replace(/(?<=\d)-/g, 'sub');
+    if (doubleOperator === true) {
+        $('#display').text('');
+        equationString += $(this).text().replace(/(?<=\d)-/g, 'sub');
+    } else {
+        equationString = '';
+        $('#display').text('');
+        equationString = $(this).text().replace(/(?<=\d)-/g, 'sub');
+    }
     console.log(equationString);
     submitEquation();
 }
