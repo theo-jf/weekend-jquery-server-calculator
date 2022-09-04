@@ -154,15 +154,8 @@ function clear() {
     doubleDecimal = false;
     if ($(this).text() === 'C') {
         console.log('state:', equationString);
-        // let placeholder = equationString.replace(/['+''sub''x''÷']+/, '');
         if (doubleOperator === true) {
             $('#display').text('0');
-            // $('#display').text(placeholder);
-        // } else if (placeholder.charAt(placeholder.length - 1) === '.') {
-        //     placeholder = placeholder.replace(/[.]+$/, '');
-        //     console.log(placeholder);
-        //     $('#display').text(placeholder);
-        //     console.log('hey')
         } else {
             $('#display').text('0')
         }
@@ -228,11 +221,12 @@ function displayHistory() {
 function redoCalculation() {
     if (doubleOperator === true) {
         $('#display').text('');
-        equationString += $(this).text().replace(/(?<=\d)-/g, 'sub');
+        // Safari fix: '/(?:\d)-/g' for look behind instead of /(?<=\d)-/g
+        equationString += $(this).text().replace(/(?:\d)-/g, 'sub');
     } else {
         equationString = '';
         $('#display').text('');
-        equationString = $(this).text().replace(/(?<=\d)-/g, 'sub');
+        equationString = $(this).text().replace(/(?:\d)-/g, 'sub');
     }
     console.log(equationString);
     submitEquation();
@@ -245,13 +239,5 @@ function clearHistory() {
     }).then(function(response) {
         displayHistory();
         console.log(response);
-        // doubleOperator = false;
-        // operatorCount = 0;
-        // doubleDecimal = false;
-        // doubleNumber = false;
-        // answerOnDisplay = true;
-        // equationString = '';
-        // operatorCarryOver = [];
-
     })
 }
