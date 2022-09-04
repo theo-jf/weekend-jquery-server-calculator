@@ -35,9 +35,28 @@ app.post('/function', (req, res) => {
             break;
         }
     }
+
     refinedCalculation = refinedCalculation.join('');
-    console.log(refinedCalculation);
     calculationHistory.calculations.push(refinedCalculation);
+    console.log(refinedCalculation);
+
+    // Order of operations 
+    if (operators[1] === 'x' || operators[1] === '÷') {
+        if (operators[0] === '+') {
+            operators.reverse();
+            let numberToSwap = numbers.shift();
+            numbers.push(numberToSwap);
+        } else if (operators[0] === 'sub') {
+            operators.reverse();
+            let numberToSwap = '-' + numbers.shift();
+            numbers.push(numberToSwap);
+            numbers[0] = '-' + numbers[0]; 
+        }
+    }
+    console.log(numbers);
+    console.log(operators);
+
+    // Calculate function
     let answer = 0;
     let i = 0;
     for (let number of numbers) {
