@@ -12,7 +12,7 @@ $(readyNow);
 function readyNow() {
 
     // Delete server-stored history on page load
-    clearHistory();
+    displayHistory();
 
     // Listener for #equals --> post request to server
     $('#equals').on('click', submitEquation);
