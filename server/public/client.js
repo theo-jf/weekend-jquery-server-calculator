@@ -72,7 +72,7 @@ function appendDisplay() {
     if (buttonType === 'number') {
         numberCount++;
         if (numberCount < 17) {
-            if (answerOnDisplay === true || doubleOperator === true || ($('#display').text() === '0' && symbol != '0')) {
+            if (answerOnDisplay === true || doubleOperator === true || ($('#display').text() === '0' && symbol != '0') || $('#display').text() != '-') {
                 $('#display').text('');
                 answerOnDisplay = false;
             } else if ($('#display').text() === '-0') {
@@ -134,7 +134,7 @@ function appendDisplay() {
         $('#display').append(`${symbol}`);
         numberCount++;
     } else if (buttonType === 'posNeg') {
-        if (doubleOperator === true) {
+        if (doubleOperator === true || answerOnDisplay === true) {
             $('#display').text('');
         }
         if (Array.from($('#display').text())[0] === '-') {
