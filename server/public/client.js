@@ -9,39 +9,30 @@ let operatorCarryOver = [];
 $(readyNow);
 
 function readyNow() {
-    // TODO:
 
     // Delete server-stored history on page load
-    // clearHistory();
+    clearHistory();
 
-    // Listener for #equals --> post request to server DONE
+    // Listener for #equals --> post request to server
     $('#equals').on('click', submitEquation);
 
-    // After (.then) post request, get request function to retrieve result 
-    // Put result back into input like a real calculator
-    // Calculation gets appended on server side to array which is loop displayed in history table
-
-    // Separate function for table display (GET) which can be called when needed
-
-    // Listeners for numbers (one giant listener on #calculator, (this) to get number?)
-    // All client side(?) take pressed number / operator and put at the end of input. 
+    // Listeners for numbers
     $('#calculator').on('click', '.button', appendDisplay);
 
-
+    // Clear button listener
     $('#clear').on('click', clear);
 
-    // listener on entire table for click on history to re-run calculation (this)
-    // Just re-push old calculation and do original post request again
-    // Put answer in input, calculation at the top of history
+    // listener on entire table for click on history to re-run calculation
     $('#historyTable').on('click', '.history', redoCalculation);
 
     $('#clearHistory').on('click', clearHistory);
-
-    // Don't forget .toFixed(#)! Look up how many digits a normal calculator goes until
 }
 
 function submitEquation() {
-    if (!isNaN(equationString.charAt(equationString.length - 1))) {
+    if (equationString === '' && doubleOperator === true) {
+        equationString = '0';
+    }
+    else if (!isNaN(equationString.charAt(equationString.length - 1))) {
         equationString += $('#display').text();
         console.log("1")
     } else {
@@ -54,6 +45,7 @@ function submitEquation() {
                 equationString = equationString.slice(0, -3);
                 console.log('sus');
             } else {
+                console.log('before error', equationString);
                 equationString = equationString.slice(0, -1);
             }
             console.log(equationString);
@@ -149,9 +141,11 @@ function appendDisplay() {
 
 function clear() {
     if ($(this).text() === 'C') {
-        let placeholder = equationString.replace(/['+''sub''x''÷']+/, '');
+        console.log('state:', equationString);
+        // let placeholder = equationString.replace(/['+''sub''x''÷']+/, '');
         if (doubleOperator === true) {
-            $('#display').text(placeholder);
+            $('#display').text('0');
+            // $('#display').text(placeholder);
         // } else if (placeholder.charAt(placeholder.length - 1) === '.') {
         //     placeholder = placeholder.replace(/[.]+$/, '');
         //     console.log(placeholder);
@@ -186,7 +180,11 @@ function getAnswer() {
         doubleDecimal = false;
         doubleNumber = false;
         answerOnDisplay = true;
-        operatorCount = 0;
+        if (operatorCarryOver.length > 0) {
+            operatorCount = 1;
+        } else {
+            operatorCount = 0;
+        }
         if (operatorCarryOver.length > 0) {
             equationString += response + operatorCarryOver[0];
             operatorCarryOver.splice(0, 1);
@@ -234,6 +232,7 @@ function clearHistory() {
         url: '/reset',
     }).then(function(response) {
         displayHistory();
+        console.log(response);
         // doubleOperator = false;
         // operatorCount = 0;
         // doubleDecimal = false;

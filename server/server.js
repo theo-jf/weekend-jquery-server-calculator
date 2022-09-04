@@ -15,6 +15,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.post('/function', (req, res) => {
     let numbers = req.body.equationString.split(/['+''sub''x''÷']+/);
     let operators = req.body.equationString.split(/[-\d]+/);
+    console.log(numbers);
+    console.log(operators);
+
     // Remove hanging dots and fill calculationHistory
     operators = operators.filter(element => {
         return (element === '' || element === '.') ? false : true;
@@ -24,8 +27,16 @@ app.post('/function', (req, res) => {
     for (let i = 0; i < numbers.length; i++) {
         if (numbers[i].charAt(numbers[i].length - 1) === '.') {
             numbers[i] = numbers[i].slice(0, -1);
+            if (numbers[i] === '') {
+                numbers[i] = '0';
+                console.log(0);
+            }
             refinedCalculation.push(numbers[i]);
         } else {
+            if (numbers[i] === '') {
+                numbers[i] = '0';
+                console.log(0);
+            }
             refinedCalculation.push(numbers[i]);
         }
         while (j < operators.length) {
@@ -36,11 +47,31 @@ app.post('/function', (req, res) => {
         }
     }
 
-    refinedCalculation = refinedCalculation.join('');
-    calculationHistory.calculations.push(refinedCalculation);
     console.log(refinedCalculation);
 
-    // Order of operations 
+    // Remove accidental double operators stored
+    for (let i = 0; i < refinedCalculation.length; i++) {
+        if (refinedCalculation[i][0] === 'x') {
+            refinedCalculation[i] = 'x';
+        } else if (refinedCalculation[i][0] === '+') {
+            refinedCalculation[i] = '+';
+        } else if (refinedCalculation[i][0] === 's') {
+            refinedCalculation[i] = 'sub';
+        } else if (refinedCalculation[i][0] === '÷') {
+            refinedCalculation[i] = '÷';
+        }
+    }
+
+    refinedCalculation = refinedCalculation.join('');
+    if (refinedCalculation === '') {
+        calculationHistory.calculations.push('0');
+    } else {
+        calculationHistory.calculations.push(refinedCalculation);
+    }
+
+    console.log(refinedCalculation);
+
+    // Order of operations -> Swap operator order and inverse equation if subtraction
     if (operators[1] === 'x' || operators[1] === '÷') {
         if (operators[0] === '+') {
             operators.reverse();
@@ -82,6 +113,7 @@ app.post('/function', (req, res) => {
             i++;
         }
     }
+    
     calculationHistory.answers.push(answer);
     res.sendStatus(202);
 })
@@ -99,9 +131,6 @@ app.delete('/reset', (req, res) => {
     calculationHistory.answers = [];
     res.sendStatus(200);
 })
-
-
-
 
 app.listen(PORT, () => {
     console.log('listening on port', PORT)
