@@ -94,6 +94,12 @@ app.get('/history', (req, res) => {
     res.send(calculationHistory);
 })
 
+app.delete('/reset', (req, res) => {
+    calculationHistory.calculations = [];
+    calculationHistory.answers = [];
+    res.sendStatus(200);
+})
+
 
 
 

@@ -23,16 +23,19 @@ function readyNow() {
 
     // Separate function for table display (GET) which can be called when needed
 
-    // Listener for #clear --> delete request to server, clear history table
-
     // Listeners for numbers (one giant listener on #calculator, (this) to get number?)
     // All client side(?) take pressed number / operator and put at the end of input. 
     $('#calculator').on('click', '.button', appendDisplay);
+
+
+    $('#clear').on('click', clear);
 
     // listener on entire table for click on history to re-run calculation (this)
     // Just re-push old calculation and do original post request again
     // Put answer in input, calculation at the top of history
     $('#historyTable').on('click', '.history', redoCalculation);
+
+    $('#clearHistory').on('click', clearHistory);
 
     // Don't forget .toFixed(#)! Look up how many digits a normal calculator goes until
 }
@@ -69,6 +72,7 @@ function submitEquation() {
 }
 
 function appendDisplay() {
+    $('#clear').text('C');
     let symbol = String($(this).text());
     let buttonType = $(this).attr('class').split(' ')[1];
     if (buttonType === 'number') {
@@ -143,6 +147,33 @@ function appendDisplay() {
     }
 }
 
+function clear() {
+    if ($(this).text() === 'C') {
+        let placeholder = equationString.replace(/['+''sub''x''÷']+/, '');
+        if (doubleOperator === true) {
+            $('#display').text(placeholder);
+        // } else if (placeholder.charAt(placeholder.length - 1) === '.') {
+        //     placeholder = placeholder.replace(/[.]+$/, '');
+        //     console.log(placeholder);
+        //     $('#display').text(placeholder);
+        //     console.log('hey')
+        } else {
+            $('#display').text('0')
+        }
+        $('#clear').text('AC');
+        answerOnDisplay = true;
+    } else if ($(this).text() === 'AC') {
+        $('#display').text('0');
+        doubleOperator = false;
+        operatorCount = 0;
+        doubleDecimal = false;
+        doubleNumber = false;
+        answerOnDisplay = true;
+        equationString = '';
+        operatorCarryOver = [];
+    }
+}
+
 function getAnswer() {
     $.ajax({
         type: 'GET',
@@ -197,3 +228,19 @@ function redoCalculation() {
     submitEquation();
 }
 
+function clearHistory() {
+    $.ajax({
+        type: 'DELETE',
+        url: '/reset',
+    }).then(function(response) {
+        displayHistory();
+        // doubleOperator = false;
+        // operatorCount = 0;
+        // doubleDecimal = false;
+        // doubleNumber = false;
+        // answerOnDisplay = true;
+        // equationString = '';
+        // operatorCarryOver = [];
+
+    })
+}
