@@ -2,6 +2,7 @@ let doubleOperator = false;
 let operatorCount = 0;
 let doubleDecimal = false;
 let doubleNumber = false;
+let numberCount = 0;
 let answerOnDisplay = true;
 let equationString = '';
 let operatorCarryOver = [];
@@ -29,6 +30,7 @@ function readyNow() {
 }
 
 function submitEquation() {
+    numberCount = 0;
     if (equationString === '' && doubleOperator === true) {
         equationString = '0';
     }
@@ -68,13 +70,18 @@ function appendDisplay() {
     let symbol = String($(this).text());
     let buttonType = $(this).attr('class').split(' ')[1];
     if (buttonType === 'number') {
-        if (answerOnDisplay === true || doubleOperator === true) {
-            $('#display').text('');
-            answerOnDisplay = false;
+        numberCount++;
+        if (numberCount < 17) {
+            if (answerOnDisplay === true || doubleOperator === true || ($('#display').text() === '0' && symbol != '0')) {
+                $('#display').text('');
+                answerOnDisplay = false;
+            } else if ($('#display').text() === '-0') {
+                $('#display').text('-');
+            }
+            $('#display').append(`${symbol}`);
+            doubleNumber = true;
+            doubleOperator = false;
         }
-        $('#display').append(`${symbol}`);
-        doubleNumber = true;
-        doubleOperator = false;
     } else if (buttonType === 'decimal') {
         if (answerOnDisplay === true || doubleOperator === true) {
             $('#display').text('');
@@ -88,6 +95,7 @@ function appendDisplay() {
         }
     } else if (buttonType === 'operator') {
         operatorCount++;
+        numberCount = 0;
         doubleDecimal = false;
         if (doubleOperator === false) {
             if (answerOnDisplay === true || doubleNumber === true && operatorCount <= 2) {
@@ -124,6 +132,7 @@ function appendDisplay() {
         // clear the display
         $('#display').text('');
         $('#display').append(`${symbol}`);
+        numberCount++;
     } else if (buttonType === 'posNeg') {
         if (doubleOperator === true) {
             $('#display').text('');
@@ -136,10 +145,13 @@ function appendDisplay() {
         } else {
             $('#display').prepend(`${'-'}`);
         }
+        answerOnDisplay = false;
     }
 }
 
 function clear() {
+    numberCount = 0;
+    doubleDecimal = false;
     if ($(this).text() === 'C') {
         console.log('state:', equationString);
         // let placeholder = equationString.replace(/['+''sub''x''÷']+/, '');

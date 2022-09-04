@@ -1,3 +1,135 @@
+body {
+    margin: 0;
+    text-align: center;
+}
+
+.calculations {
+    display: table-cell;
+    vertical-align: middle 
+}
+
+.button {
+    text-align: center;
+    font-size: 25px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 93px;
+    margin: 1px;
+}
+
 .operator {
+    margin: 1px;
     background-color: orange;
+    border-radius: 2px;
+    padding-left: 38px;
+    padding-right: 38px;
+}
+
+.header {
+    margin: 0;
+    background-color: cadetblue;
+}
+
+.headerOne {
+    margin: 0;
+    padding: 10px;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    margin: 0;
+}
+
+#display {
+    min-height: 50px;
+    border-radius: 100px;
+    border-style:inset;
+    border-color: rgb(56, 49, 49);
+    text-align: right;
+    padding: 2px;
+    padding-right: 10px;
+    margin: 0;
+    margin-bottom: 20px;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    color: rgba(6, 6, 6, 0.885);
+    background-color: rgb(74, 139, 74);
+    font-family: 'digital-7';
+    font-size: 40px;
+}
+
+@font-face {
+    font-family: 'digital-7';
+    src: url('./fonts/digital-7/digital-7.ttf');
+  }
+
+#calculator {
+    background-color: rgb(80, 86, 92);
+    border-style:ridge double;
+    border-radius: 10px;
+    padding: 10px;
+    margin: auto;
+    max-width: 400px;
+    max-height: 510px;
+    min-height: 510px;
+    min-width: 400px;
+}
+
+#clearHistory {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 1;
+    font-size: 20px;
+    padding: 2px;
+    padding-left: 130px;
+    padding-right: 130px;
+    margin: 1px;
+    margin-top: 10px;
+}
+
+#equals {
+    font-size: 25px;
+    padding: 20px;
+    padding-left: 37px;
+    padding-right: 37px;
+    margin: 1px;
+    padding-top: 58px;
+    padding-bottom: 58px;
+}
+
+.number {
+    padding-left: 37px;
+    padding-right: 37px;
+}
+
+.bottom {
+    margin-left: -3px;
+}
+
+#positiveNegative {
+    font-size: 25px;
+    padding: 20px;
+    padding-left: 29px;
+    padding-right: 29px;
+    margin: 1px;
+    margin-right: 4px;
+    padding-top: 58px;
+    padding-bottom: 58px;
+}
+
+#one {
+    padding-left: 39px;
+    padding-right: 39px;
+    margin-right: -2px;
+}
+
+#clear {
+    text-align: center;
+    font-size: 25px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 93px;
+    margin: 1px;
+    margin-right: -2px;
 }
