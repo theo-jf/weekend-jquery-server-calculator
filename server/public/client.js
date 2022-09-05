@@ -72,7 +72,7 @@ function appendDisplay() {
     if (buttonType === 'number') {
         numberCount++;
         if (numberCount < 17) {
-            if (answerOnDisplay === true || doubleOperator === true || ($('#display').text() === '0' && symbol != '0') || $('#display').text() != '-') {
+            if (answerOnDisplay === true || doubleOperator === true || ($('#display').text() === '0' && symbol != '0')) {
                 $('#display').text('');
                 answerOnDisplay = false;
             } else if ($('#display').text() === '-0') {

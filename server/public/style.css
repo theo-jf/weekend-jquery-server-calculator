@@ -23,8 +23,8 @@ main {
 
 .history {
     font-family: 'digital-7';
-    font-size: 50px;
-    padding-left: 80px;
+    font-size: 30px;
+    /* padding-left: 80px; */
 }
 
 .history:hover {
@@ -32,6 +32,7 @@ main {
 }
 
 .historySection {
+    text-align: left;
     font-family: 'digital-7';
     font-size: 30px;
     margin: 50px;
@@ -42,8 +43,8 @@ main {
     min-height: 50px;
     border-style: inset;
     border-color: rgb(56, 49, 49);
-    max-width: 400px;
-    min-width: 300px;
+    max-width: 500px;
+    min-width: 500px;
     margin-right: 15%;
     padding: 30px;
 }
