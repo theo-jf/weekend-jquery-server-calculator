@@ -221,12 +221,16 @@ function displayHistory() {
 function redoCalculation() {
     if (doubleOperator === true) {
         $('#display').text('');
-        // Safari fix: '/(?:\d)-/g' for look behind instead of /(?<=\d)-/g
-        equationString += $(this).text().replace(/(?:\d)-/g, 'sub');
+        // Safari fix: alternative for /(?<=\d)-/g for lookbehind
+        // First replace all '-' signs with 'sub'
+        // Then replace any double subs with 'sub-""
+        equationString += $(this).text().replace(/-/g, 'sub');
+        equationString = equationString.replace(/subsub/g, 'sub-');
     } else {
         equationString = '';
         $('#display').text('');
-        equationString = $(this).text().replace(/(?:\d)-/g, 'sub');
+        equationString = $(this).text().replace(/-/g, 'sub');
+        equationString = equationString.replace(/subsub/g, 'sub-');
     }
     console.log(equationString);
     submitEquation();
